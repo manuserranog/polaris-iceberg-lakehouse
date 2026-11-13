@@ -1,0 +1,21 @@
+# Credenciales generadas por scripts/gen-secrets.sh y polaris/bootstrap.sh (nunca versionar)
+.secrets/
+.env
+.env.*
+*.pem
+*.key
+kubeconfig*
+
+# Clones temporales (make console-image)
+.build/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# SO / editores
+.DS_Store
+.idea/
+.vscode/
+*.swp

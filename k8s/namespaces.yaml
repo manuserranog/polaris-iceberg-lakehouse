@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lakehouse   # almacenamiento S3 (SeaweedFS), Postgres y Polaris
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spark-jobs  # donde el Spark Operator lanza driver y executors

@@ -1,0 +1,43 @@
+# Apache Polaris 1.8.0 — catálogo Iceberg REST
+image:
+  repository: apache/polaris
+  tag: "1.8.0"
+
+persistence:
+  type: relational-jdbc
+  relationalJdbc:
+    secret:
+      name: polaris-db          # claves: username, password, jdbcUrl
+
+# Credenciales con las que Polaris escribe metadata.json en el almacenamiento S3
+storage:
+  secret:
+    name: s3-creds
+    awsAccessKeyId: AWS_ACCESS_KEY_ID
+    awsSecretAccessKey: AWS_SECRET_ACCESS_KEY
+
+extraEnv:
+  - { name: AWS_REGION, value: us-east-1 }
+
+# Con stsUnavailable=true, el FileIO del servidor usa la cadena de credenciales AWS por defecto,
+# así que también exponemos las claves como AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY.
+envFrom:
+  - secretRef: { name: s3-creds }
+
+features:
+  # Permite endpoints S3 no-AWS (Scality / SeaweedFS) sin STS en la PoC
+  SUPPORTED_CATALOG_STORAGE_TYPES: [S3]
+
+# CORS para la Polaris Console (el navegador llama directamente a la API en localhost:8181)
+cors:
+  enabled: true
+  allowedOrigins: ["http://localhost:8080"]
+  allowedMethods: [GET, POST, PUT, DELETE, PATCH, OPTIONS]
+  allowedHeaders: [Content-Type, Authorization, Polaris-Realm, X-Request-ID]
+  exposedHeaders: ["*"]
+  accessControlMaxAge: PT10M
+  accessControlAllowCredentials: true
+
+resources:
+  requests: { cpu: 250m, memory: 512Mi }
+  limits: { memory: 1Gi }

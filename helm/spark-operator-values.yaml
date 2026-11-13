@@ -1,0 +1,13 @@
+# Kubeflow Spark Operator 2.5.2
+spark:
+  jobNamespaces: [spark-jobs]
+  serviceAccount:
+    create: true
+    name: spark            # SA que usan driver y executors
+
+webhook:
+  enable: true             # necesario para montar volúmenes/ConfigMaps y envFrom en los pods
+
+controller:
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }

@@ -1,0 +1,26 @@
+# Inicializa el esquema de Polaris en Postgres y crea el realm POLARIS con su principal root.
+# Se ejecuta una sola vez antes de arrancar el servidor (idempotente: si ya existe, falla sin romper nada).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: polaris-bootstrap
+  namespace: lakehouse
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: admin-tool
+          image: apache/polaris-admin-tool:1.8.0
+          args: ["bootstrap", "-r", "POLARIS", "-c", "$(POLARIS_ROOT_CREDENTIAL)"]
+          env:
+            - { name: POLARIS_PERSISTENCE_TYPE, value: relational-jdbc }
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              valueFrom: { secretKeyRef: { name: polaris-db, key: jdbcUrl } }
+            - name: QUARKUS_DATASOURCE_USERNAME
+              valueFrom: { secretKeyRef: { name: polaris-db, key: username } }
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom: { secretKeyRef: { name: polaris-db, key: password } }
+            - name: POLARIS_ROOT_CREDENTIAL   # POLARIS,root,<secret>
+              valueFrom: { secretKeyRef: { name: polaris-root, key: credential } }
